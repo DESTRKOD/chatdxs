@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Вход — DxS</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      height: 100vh;
+      width: 100vw;
+      background: linear-gradient(180deg, #1B1F3A 0%, #0F1226 100%);
+      overflow: hidden;
+      font-family: -apple-system, system-ui, "SF Pro Text", "Helvetica Neue", sans-serif;
+      color: #FFFFFF;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
+
+    .blob {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: 0.25;
+      pointer-events: none;
+      z-index: 0;
+      animation: float 20s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(20px, -20px) scale(1.05); }
+    }
+
+    .blob-1 { width: 400px; height: 400px; background: radial-gradient(circle, #5B7CFF, transparent); top: -150px; right: -100px; }
+    .blob-2 { width: 500px; height: 500px; background: radial-gradient(circle, #7FA1FF, transparent); bottom: -150px; right: -120px; opacity: 0.35; }
+    .blob-3 { width: 300px; height: 300px; background: radial-gradient(circle, #5B7CFF, transparent); bottom: 20%; left: -150px; opacity: 0.2; }
+
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes scaleIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .auth-container {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .auth-content {
+      width: 100%;
+      max-width: 380px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: fadeSlideUp 0.6s ease-out;
+    }
+
+    .title h1 {
+      font-size: 42px;
+      font-weight: 500;
+      line-height: 1.2;
+      color: #FFFFFF;
+      text-align: center;
+      margin-bottom: 40px;
+      animation: scaleIn 0.5s ease-out 0.1s both;
+    }
+
+    .card {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+      backdrop-filter: blur(20px);
+      padding: 24px;
+      animation: fadeSlideUp 0.5s ease-out 0.2s both;
+    }
+
+    .phone-group {
+      display: flex;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 16px;
+      transition: all 0.3s ease;
+    }
+
+    .phone-group:focus-within {
+      border-color: #5B7CFF;
+      box-shadow: 0 0 0 3px rgba(91, 124, 255, 0.2);
+    }
+
+    .country-selector {
+      padding: 0 12px 0 16px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.08);
+      border-right: 1px solid rgba(255,255,255,0.1);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .country-selector:active {
+      transform: scale(0.98);
+      background: rgba(255,255,255,0.15);
+    }
+
+    .phone-input {
+      flex: 1;
+      height: 52px;
+      background: transparent;
+      border: none;
+      color: #FFFFFF;
+      font-size: 16.5px;
+      padding: 0 16px;
+      outline: none;
+    }
+
+    .phone-input::placeholder {
+      color: rgba(255, 255, 255, 0.55);
+      font-size: 11.5px;
+    }
+
+    .btn-continue {
+      width: 100%;
+      height: 54px;
+      background: linear-gradient(90deg, #5B7CFF 0%, #7FA1FF 100%);
+      border: none;
+      border-radius: 16px;
+      color: #FFFFFF;
+      font-size: 17px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(91, 124, 255, 0.4);
+      transition: all 0.2s ease;
+    }
+
+    .btn-continue:active {
+      transform: scale(0.96);
+      box-shadow: 0 4px 12px rgba(91, 124, 255, 0.3);
+    }
+
+    .btn-create {
+      width: 100%;
+      text-align: center;
+      color: #7FA1FF;
+      font-size: 15.5px;
+      font-weight: 500;
+      margin-top: 20px;
+      text-decoration: none;
+      display: block;
+      padding: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-create:active {
+      transform: scale(0.96);
+      opacity: 0.8;
+    }
+  </style>
+</head>
+<body>
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+
+  <div class="auth-container">
+    <div class="auth-content">
+      <div class="title">
+        <h1>Добро пожаловать<br>в DxS</h1>
+      </div>
+      <div class="card">
+        <div class="phone-group">
+          <div class="country-selector" id="countrySelector">
+            <span id="flag">🇷🇺</span>
+            <span id="code">+7</span>
+          </div>
+          <input type="tel" class="phone-input" id="phoneInput" placeholder="Введите номер телефона">
+        </div>
+        <button class="btn-continue" id="continueBtn">Продолжить</button>
+        <a href="reg.html" class="btn-create">Создать аккаунт</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const countries = [
+      { flag: "🇷🇺", code: "+7", minLen: 10 },
+      { flag: "🇺🇦", code: "+380", minLen: 9 },
+      { flag: "🇰🇿", code: "+7", minLen: 10 },
+      { flag: "🇧🇾", code: "+375", minLen: 9 },
+      { flag: "🇺🇸", code: "+1", minLen: 10 }
+    ];
+
+    let currentCountry = 0;
+    const selector = document.getElementById('countrySelector');
+    const flagEl = document.getElementById('flag');
+    const codeEl = document.getElementById('code');
+    const phoneInput = document.getElementById('phoneInput');
+
+    selector.addEventListener('click', () => {
+      currentCountry = (currentCountry + 1) % countries.length;
+      flagEl.textContent = countries[currentCountry].flag;
+      codeEl.textContent = countries[currentCountry].code;
+    });
+
+    function formatPhone(phone, code) {
+      let cleaned = phone.replace(/\D/g, '');
+      if (cleaned.length === 10) return `${code} (${cleaned.slice(0,3)}) ${cleaned.slice(3,6)}-${cleaned.slice(6,8)}-${cleaned.slice(8,10)}`;
+      return `${code} ${cleaned}`;
+    }
+
+    document.getElementById('continueBtn').addEventListener('click', () => {
+      const phone = phoneInput.value.trim();
+      if (!phone) {
+        alert('Введите номер телефона');
+        return;
+      }
+      const code = codeEl.textContent;
+      localStorage.setItem('tempPhone', formatPhone(phone, code));
+      localStorage.setItem('tempCountryCode', code);
+      window.location.href = 'verify.html';
+    });
+  </script>
+</body>
+</html>
