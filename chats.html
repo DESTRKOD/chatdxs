@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Чаты — DxS</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      height: 100vh;
+      width: 100vw;
+      background: linear-gradient(180deg, #1B1F3A 0%, #0F1226 100%);
+      overflow: hidden;
+      font-family: -apple-system, system-ui, "SF Pro Text", "Helvetica Neue", sans-serif;
+      color: #FFFFFF;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
+
+    .blob {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: 0.25;
+      pointer-events: none;
+      z-index: 0;
+      animation: float 20s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(20px, -20px) scale(1.05); }
+    }
+
+    .blob-1 { width: 400px; height: 400px; background: radial-gradient(circle, #5B7CFF, transparent); top: -150px; right: -100px; }
+    .blob-2 { width: 500px; height: 500px; background: radial-gradient(circle, #7FA1FF, transparent); bottom: -150px; right: -120px; opacity: 0.35; }
+    .blob-3 { width: 300px; height: 300px; background: radial-gradient(circle, #5B7CFF, transparent); bottom: 20%; left: -150px; opacity: 0.2; }
+
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideInRight {
+      from { opacity: 0; transform: translateX(-20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .main-container {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      padding-bottom: 90px;
+    }
+
+    .tabs-wrapper {
+      padding: 16px 16px 0 16px;
+    }
+
+    .tabs-container {
+      display: flex;
+      gap: 6px;
+      padding: 6px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      width: 100%;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 6px 14px;
+      border-radius: 12px;
+      font-size: 14px;
+      background: transparent;
+      border: none;
+      color: rgba(255, 255, 255, 0.5);
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .tab.active {
+      background: linear-gradient(90deg, #5B7CFF, #7FA1FF);
+      color: white;
+      box-shadow: 0 4px 12px rgba(91, 124, 255, 0.4);
+    }
+
+    .tab:active {
+      transform: scale(0.96);
+    }
+
+    .search-wrapper {
+      padding: 8px 16px 0 16px;
+    }
+
+    .search-container {
+      height: 44px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+      transition: all 0.3s ease;
+    }
+
+    .search-container:focus-within {
+      border-color: #5B7CFF;
+      box-shadow: 0 0 12px rgba(91, 124, 255, 0.25);
+    }
+
+    .search-icon {
+      width: 16px;
+      height: 16px;
+      opacity: 0.5;
+      margin-right: 10px;
+    }
+
+    .search-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: white;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .chats-wrapper {
+      flex: 1;
+      margin-top: 12px;
+      padding: 0 16px;
+      overflow-y: auto;
+    }
+
+    .chat-item {
+      display: flex;
+      align-items: center;
+      padding: 12px;
+      margin-bottom: 10px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      animation: slideInRight 0.4s ease-out;
+    }
+
+    .chat-item:active {
+      transform: scale(0.98);
+    }
+
+    .avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      margin-right: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      background: rgba(91, 124, 255, 0.2);
+    }
+
+    .chat-info {
+      flex: 1;
+    }
+
+    .chat-name {
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .chat-message {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 14px;
+      margin-top: 2px;
+    }
+
+    .chat-time {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 85%;
+      max-width: 360px;
+      padding: 10px;
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(25px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      z-index: 100;
+    }
+
+    .nav-btn {
+      flex: 1;
+      text-align: center;
+      padding: 10px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .nav-btn.active {
+      background: linear-gradient(90deg, #5B7CFF, #7FA1FF);
+      color: white;
+      box-shadow: 0 4px 12px rgba(91, 124, 255, 0.4);
+    }
+
+    .nav-btn:active {
+      transform: scale(0.96);
+    }
+  </style>
+</head>
+<body>
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+
+  <div class="main-container">
+    <div class="tabs-wrapper">
+      <div class="tabs-container">
+        <button class="tab active" data-tab="all">Все</button>
+        <button class="tab" data-tab="personal">Личные</button>
+        <button class="tab" data-tab="channels">Каналы</button>
+      </div>
+    </div>
+    <div class="search-wrapper">
+      <div class="search-container">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="text" class="search-input" id="searchInput" placeholder="Поиск чатов">
+      </div>
+    </div>
+    <div class="chats-wrapper" id="chatsList"></div>
+    <div class="bottom-nav">
+      <div class="nav-btn active" data-nav="chats">Чаты</div>
+      <div class="nav-btn" data-nav="profile">Профиль</div>
+    </div>
+  </div>
+
+  <script>
+    // Данные чатов
+    const chatsData = {
+      all: [
+        { name: "Анна Смирнова", message: "Привет!", time: "14:32", avatar: "👩", type: "personal", id: "user1" },
+        { name: "Дмитрий Петров", message: "Скинь фото", time: "13:15", avatar: "👨", type: "personal", id: "user2" },
+        { name: "Дизайн-канал", message: "Новый макет", time: "11:20", avatar: "🎨", type: "channel", id: "channel1", isAdmin: false },
+        { name: "Новости DxS", message: "Обновление v2.0", time: "Вчера", avatar: "📰", type: "channel", id: "channel2", isAdmin: false }
+      ],
+      personal: [
+        { name: "Анна Смирнова", message: "Привет!", time: "14:32", avatar: "👩", type: "personal", id: "user1" },
+        { name: "Дмитрий Петров", message: "Скинь фото", time: "13:15", avatar: "👨", type: "personal", id: "user2" }
+      ],
+      channels: [
+        { name: "Дизайн-канал", message: "Новый макет", time: "11:20", avatar: "🎨", type: "channel", id: "channel1", isAdmin: false },
+        { name: "Новости DxS", message: "Обновление v2.0", time: "Вчера", avatar: "📰", type: "channel", id: "channel2", isAdmin: false }
+      ]
+    };
+
+    let currentTab = 'all';
+    let searchQuery = '';
+
+    // Проверка авторизации
+    if (localStorage.getItem('isLoggedIn') !== 'true') {
+      window.location.href = 'login.html';
+    }
+
+    function renderChats() {
+      let chats = [...chatsData[currentTab]];
+      if (searchQuery) {
+        chats = chats.filter(c => c.name.toLowerCase().includes(searchQuery.toLowerCase()));
+      }
+      
+      const container = document.getElementById('chatsList');
+      if (chats.length === 0) {
+        container.innerHTML = '<div style="text-align:center;padding:40px;color:rgba(255,255,255,0.5);">Ничего не найдено</div>';
+        return;
+      }
+      
+      container.innerHTML = chats.map(chat => `
+        <div class="chat-item" data-name="${chat.name}" data-avatar="${chat.avatar}" data-type="${chat.type}" data-id="${chat.id}" data-isadmin="${chat.isAdmin || false}">
+          <div class="avatar">${chat.avatar}</div>
+          <div class="chat-info">
+            <div class="chat-name">${chat.name}</div>
+            <div class="chat-message">${chat.message}</div>
+          </div>
+          <div class="chat-time">${chat.time}</div>
+        </div>
+      `).join('');
+      
+      document.querySelectorAll('.chat-item').forEach(el => {
+        el.addEventListener('click', () => {
+          const type = el.dataset.type;
+          const id = el.dataset.id;
+          const name = el.dataset.name;
+          const avatar = el.dataset.avatar;
+          const isAdmin = el.dataset.isadmin === 'true';
+          
+          if (type === 'channel') {
+            window.location.href = `channel.html?id=${id}&name=${encodeURIComponent(name)}&avatar=${encodeURIComponent(avatar)}&isAdmin=${isAdmin}`;
+          } else {
+            window.location.href = `chat.html?id=${id}&name=${encodeURIComponent(name)}&avatar=${encodeURIComponent(avatar)}`;
+          }
+        });
+      });
+    }
+
+    // Переключение табов
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        currentTab = tab.dataset.tab;
+        renderChats();
+      });
+    });
+
+    // Поиск
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+      searchQuery = e.target.value;
+      renderChats();
+    });
+
+    // Навигация
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (btn.dataset.nav === 'profile') {
+          window.location.href = 'profile.html';
+        }
+      });
+    });
+
+    renderChats();
+  </script>
+</body>
+</html>
