@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Канал — DxS</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      height: 100vh;
+      width: 100vw;
+      background: linear-gradient(180deg, #1B1F3A 0%, #0F1226 100%);
+      overflow: hidden;
+      font-family: -apple-system, system-ui, "SF Pro Text", "Helvetica Neue", sans-serif;
+      color: #FFFFFF;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
+
+    .blob {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: 0.25;
+      pointer-events: none;
+      z-index: 0;
+      animation: float 20s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(20px, -20px) scale(1.05); }
+    }
+
+    .blob-1 { width: 400px; height: 400px; background: radial-gradient(circle, #5B7CFF, transparent); top: -150px; right: -100px; }
+    .blob-2 { width: 500px; height: 500px; background: radial-gradient(circle, #7FA1FF, transparent); bottom: -150px; right: -120px; opacity: 0.35; }
+    .blob-3 { width: 300px; height: 300px; background: radial-gradient(circle, #5B7CFF, transparent); bottom: 20%; left: -150px; opacity: 0.2; }
+
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .chat-container {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chat-header {
+      height: 64px;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255, 255, 255, 0.02);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .back-button {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border-radius: 8px;
+      font-size: 24px;
+      transition: all 0.2s ease;
+    }
+
+    .back-button:active {
+      transform: scale(0.92);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .chat-header-center {
+      flex: 1;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .chat-user-name {
+      font-size: 17px;
+      font-weight: 600;
+    }
+
+    .chat-user-status {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .chat-user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(91, 124, 255, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .messages-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .message-bubble {
+      max-width: 80%;
+      padding: 10px 14px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      word-wrap: break-word;
+      white-space: normal;
+      word-break: break-word;
+      animation: fadeSlideUp 0.3s ease-out;
+    }
+
+    .message-info {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 4px;
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .channel-info-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 14px;
+      margin: 12px 16px;
+    }
+
+    .sound-toggle {
+      width: 44px;
+      height: 24px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.2);
+      cursor: pointer;
+      position: relative;
+      transition: all 0.2s ease;
+    }
+
+    .sound-toggle.active {
+      background: linear-gradient(90deg, #5B7CFF, #7FA1FF);
+    }
+
+    .sound-toggle::after {
+      content: '';
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: white;
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      transition: transform 0.2s ease;
+    }
+
+    .sound-toggle.active::after {
+      transform: translateX(20px);
+    }
+
+    .admin-badge {
+      background: rgba(91, 124, 255, 0.3);
+      padding: 4px 8px;
+      border-radius: 8px;
+      font-size: 11px;
+      margin-left: 8px;
+    }
+
+    .admin-panel {
+      padding: 12px 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 14px;
+      margin: 0 16px 12px 16px;
+    }
+
+    .admin-btn {
+      background: linear-gradient(90deg, #5B7CFF, #7FA1FF);
+      border: none;
+      padding: 10px 16px;
+      border-radius: 12px;
+      color: white;
+      font-size: 14px;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .admin-btn:active {
+      transform: scale(0.98);
+    }
+  </style>
+</head>
+<body>
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+
+  <div class="chat-container">
+    <div class="chat-header">
+      <div class="back-button" onclick="window.location.href='chats.html'">←</div>
+      <div class="chat-header-center" id="infoClick">
+        <div class="chat-user-name" id="channelName">Загрузка...</div>
+        <div class="chat-user-status" id="channelStats">канал</div>
+      </div>
+      <div class="chat-user-avatar" id="channelAvatar">📢</div>
+    </div>
+    <div class="messages-area" id="messagesArea"></div>
+    <div id="channelInfoBar" class="channel-info-bar">
+      <span>🔔 Уведомления</span>
+      <div class="sound-toggle" id="soundToggle"></div>
+    </div>
+    <div id="adminPanel" style="display:none;" class="admin-panel">
+      <button class="admin-btn" id="editChannelBtn">✎ Редактировать канал</button>
+    </div>
+  </div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const channelId = urlParams.get('id');
+    const channelName = decodeURIComponent(urlParams.get('name') || 'Канал');
+    const channelAvatar = decodeURIComponent(urlParams.get('avatar') || '📢');
+    const isAdmin = urlParams.get('isAdmin') === 'true';
+
+    document.getElementById('channelName').textContent = channelName;
+    document.getElementById('channelAvatar').textContent = channelAvatar;
+
+    // Данные канала
+    let channelData = JSON.parse(localStorage.getItem(`channel_${channelId}`) || JSON.stringify({
+      name: channelName,
+      avatar: channelAvatar,
+      subscribers: 156,
+      admins: ['Алексей Смирнов'],
+      description: 'Официальный канал DxS. Здесь публикуются новости и обновления.',
+      messages: [
+        { text: 'Добро пожаловать в канал!', time: new Date('2024-01-15T10:00:00'), author: 'Админ' }
+      ]
+    }));
+
+    document.getElementById('channelStats').textContent = `${channelData.subscribers} подписчиков`;
+
+    // Показываем панель админа
+    if (isAdmin) {
+      document.getElementById('adminPanel').style.display = 'block';
+    }
+
+    // Звук
+    let soundEnabled = JSON.parse(localStorage.getItem(`sound_${channelId}`) || 'true');
+    const soundToggle = document.getElementById('soundToggle');
+    soundToggle.classList.toggle('active', soundEnabled);
+    soundToggle.addEventListener('click', () => {
+      soundEnabled = !soundEnabled;
+      localStorage.setItem(`sound_${channelId}`, soundEnabled);
+      soundToggle.classList.toggle('active', soundEnabled);
+    });
+
+    function renderMessages() {
+      const area = document.getElementById('messagesArea');
+      if (channelData.messages.length === 0) {
+        area.innerHTML = '<div style="text-align:center;padding:40px;color:rgba(255,255,255,0.5);">нет сообщений</div>';
+        return;
+      }
+      area.innerHTML = channelData.messages.map(msg => {
+        const timeStr = new Date(msg.time).toLocaleString();
+        return `
+          <div class="message-bubble">
+            ${msg.text}
+            <div class="message-info">
+              <span>${msg.author || 'Админ'}</span>
+              <span>•</span>
+              <span>${timeStr}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+      area.scrollTop = area.scrollHeight;
+    }
+
+    // Переход в инфо о канале
+    document.getElementById('infoClick').addEventListener('click', () => {
+      window.location.href = `channel-info.html?id=${channelId}`;
+    });
+
+    // Редактирование (для админа)
+    if (isAdmin) {
+      document.getElementById('editChannelBtn').addEventListener('click', () => {
+        const newName = prompt('Название канала', channelData.name);
+        if (newName) {
+          channelData.name = newName;
+          document.getElementById('channelName').textContent = newName;
+          localStorage.setItem(`channel_${channelId}`, JSON.stringify(channelData));
+        }
+      });
+    }
+
+    renderMessages();
+  </script>
+</body>
+</html>
