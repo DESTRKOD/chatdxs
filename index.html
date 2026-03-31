@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>DxS</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      height: 100vh;
+      background: linear-gradient(180deg, #1B1F3A 0%, #0F1226 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: -apple-system, system-ui, sans-serif;
+    }
+    .loader {
+      text-align: center;
+      color: white;
+      animation: pulse 1s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 0.5; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.05); }
+    }
+  </style>
+</head>
+<body>
+  <div class="loader">
+    <h2>DxS</h2>
+    <p>Загрузка...</p>
+  </div>
+  <script>
+    // Проверяем, есть ли сохраненная сессия
+    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    if (isLoggedIn) {
+      window.location.href = 'chats.html';
+    } else {
+      window.location.href = 'login.html';
+    }
+  </script>
+</body>
+</html>
