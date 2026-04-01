@@ -316,11 +316,20 @@
     const userName = decodeURIComponent(urlParams.get('name') || 'Пользователь');
     const userAvatar = decodeURIComponent(urlParams.get('avatar') || '👤');
 
-    document.getElementById('chatUserName').textContent = userName;
-    document.getElementById('chatUserAvatar').textContent = userAvatar;
+    // Данные собеседника
+    const usersData = {
+      user1: { name: "Анна Смирнова", phone: "+7 (999) 123-45-67", bio: "Дизайнер интерфейсов", avatar: "👩" },
+      user2: { name: "Дмитрий Петров", phone: "+7 (999) 234-56-78", bio: "Разработчик", avatar: "👨" }
+    };
 
+    const currentUserData = usersData[userId] || { name: userName, avatar: userAvatar, bio: "", phone: "" };
+
+    document.getElementById('chatUserName').textContent = currentUserData.name;
+    document.getElementById('chatUserAvatar').textContent = currentUserData.avatar;
+
+    // Переход в профиль собеседника (не свой!)
     document.getElementById('profileClick').addEventListener('click', () => {
-      window.location.href = `profile.html?id=${userId}`;
+      window.location.href = `profile.html?view=other&id=${userId}&name=${encodeURIComponent(currentUserData.name)}&avatar=${encodeURIComponent(currentUserData.avatar)}&phone=${encodeURIComponent(currentUserData.phone)}&bio=${encodeURIComponent(currentUserData.bio)}`;
     });
 
     let messages = JSON.parse(localStorage.getItem(`messages_${userId}`) || '[]');
