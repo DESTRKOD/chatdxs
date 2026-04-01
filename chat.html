@@ -275,7 +275,7 @@
       <div class="back-button" onclick="window.location.href='chats.html'">←</div>
       <div class="chat-header-center" id="profileClick">
         <div class="chat-user-name" id="chatUserName">Загрузка...</div>
-        <div class="chat-user-status" id="chatUserStatus">онлайн</div>
+        <div class="chat-user-status">онлайн</div>
       </div>
       <div class="chat-user-avatar" id="chatUserAvatar">👤</div>
     </div>
@@ -311,7 +311,6 @@
   <input type="file" id="mediaInput" accept="image/*,video/*" style="display:none">
 
   <script>
-    // Получаем параметры из URL
     const urlParams = new URLSearchParams(window.location.search);
     const userId = urlParams.get('id');
     const userName = decodeURIComponent(urlParams.get('name') || 'Пользователь');
@@ -320,12 +319,10 @@
     document.getElementById('chatUserName').textContent = userName;
     document.getElementById('chatUserAvatar').textContent = userAvatar;
 
-    // Переход в профиль
     document.getElementById('profileClick').addEventListener('click', () => {
       window.location.href = `profile.html?id=${userId}`;
     });
 
-    // Хранилище сообщений
     let messages = JSON.parse(localStorage.getItem(`messages_${userId}`) || '[]');
 
     function renderMessages() {
@@ -334,7 +331,7 @@
         area.innerHTML = '<div style="text-align:center;padding:40px;color:rgba(255,255,255,0.5);">ещё нет сообщений</div>';
         return;
       }
-      area.innerHTML = messages.map((msg, i) => {
+      area.innerHTML = messages.map((msg) => {
         const timeStr = msg.time ? new Date(msg.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
         const statusIcon = msg.isOwn ? (msg.read ? '✓✓' : '✓') : '';
         return `
@@ -356,12 +353,7 @@
       const text = input.value.trim();
       if (!text) return;
       
-      const newMsg = { 
-        text, 
-        isOwn: true, 
-        time: new Date(),
-        read: false
-      };
+      const newMsg = { text, isOwn: true, time: new Date(), read: false };
       messages.push(newMsg);
       localStorage.setItem(`messages_${userId}`, JSON.stringify(messages));
       renderMessages();
@@ -383,13 +375,7 @@
         if (file) {
           const reader = new FileReader();
           reader.onload = (event) => {
-            messages.push({ 
-              text: '📎 Медиафайл', 
-              media: event.target.result, 
-              isOwn: true, 
-              time: new Date(),
-              read: false
-            });
+            messages.push({ text: '📎 Медиафайл', media: event.target.result, isOwn: true, time: new Date(), read: false });
             localStorage.setItem(`messages_${userId}`, JSON.stringify(messages));
             renderMessages();
           };
@@ -412,7 +398,6 @@
       input.style.height = Math.min(input.scrollHeight, 100) + 'px';
     }
 
-    // Эмодзи
     const emojiPanel = document.getElementById('emojiPanel');
     const emojiBtn = document.getElementById('emojiBtn');
     const chatInputContainer = document.querySelector('.chat-input-container');
@@ -455,7 +440,6 @@
       }
     });
 
-    // Голос/видео переключение
     let isVideoMode = false;
     document.getElementById('recordBtn').addEventListener('click', () => {
       isVideoMode = !isVideoMode;
