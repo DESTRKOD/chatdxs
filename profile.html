@@ -102,8 +102,6 @@
       align-items: center;
       justify-content: center;
       font-size: 48px;
-      cursor: pointer;
-      transition: all 0.2s ease;
       overflow: hidden;
     }
 
@@ -111,10 +109,6 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-    }
-
-    .avatar:active {
-      transform: scale(0.96);
     }
 
     .edit-avatar-btn {
@@ -144,12 +138,39 @@
       color: white;
       text-align: center;
       margin-bottom: 8px;
+      cursor: pointer;
+      padding: 4px 12px;
+      border-radius: 12px;
+      transition: all 0.2s ease;
+    }
+
+    .profile-name:active {
+      background: rgba(255, 255, 255, 0.1);
     }
 
     .profile-phone {
       font-size: 14px;
       color: rgba(255, 255, 255, 0.6);
       text-align: center;
+      cursor: pointer;
+      padding: 4px 12px;
+      border-radius: 12px;
+      transition: all 0.2s ease;
+    }
+
+    .profile-phone:active {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .profile-bio {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.7);
+      text-align: center;
+      margin-top: 12px;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      cursor: pointer;
     }
 
     .info-card {
@@ -304,20 +325,21 @@
   <div class="blob blob-3"></div>
 
   <div class="container">
-    <div class="back-button" onclick="window.location.href='chats.html'">←</div>
+    <div class="back-button" onclick="history.back()">←</div>
 
     <div class="profile-header">
       <div class="avatar-container">
         <div class="avatar" id="profileAvatar">
           <span id="avatarEmoji">👤</span>
         </div>
-        <div class="edit-avatar-btn" id="editAvatarBtn">✎</div>
+        <div class="edit-avatar-btn" id="editAvatarBtn" style="display: none;">✎</div>
       </div>
       <div class="profile-name" id="profileName">Загрузка...</div>
-      <div class="profile-phone" id="profilePhone">+7 (999) 123-45-67</div>
+      <div class="profile-phone" id="profilePhone"></div>
+      <div class="profile-bio" id="profileBio"></div>
     </div>
 
-    <div class="info-card">
+    <div class="info-card" id="settingsCard">
       <div class="settings-list">
         <div class="settings-item" id="privacySettings">
           <div class="settings-icon">🔒</div>
@@ -334,10 +356,10 @@
       </div>
     </div>
 
-    <div class="logout-btn" id="logoutBtn">Выйти из аккаунта</div>
+    <div class="logout-btn" id="logoutBtn" style="display: none;">Выйти из аккаунта</div>
   </div>
 
-  <!-- Модальное окно для редактирования имени -->
+  <!-- Модальные окна для редактирования -->
   <div id="nameModal" class="modal">
     <div class="modal-content">
       <div class="modal-title">Редактировать имя</div>
@@ -349,22 +371,61 @@
     </div>
   </div>
 
+  <div id="phoneModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-title">Редактировать номер</div>
+      <input type="tel" class="modal-input" id="phoneInput" placeholder="Номер телефона">
+      <div class="modal-buttons">
+        <button class="modal-btn modal-btn-secondary" id="cancelPhoneBtn">Отмена</button>
+        <button class="modal-btn modal-btn-primary" id="savePhoneBtn">Сохранить</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="bioModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-title">Редактировать описание</div>
+      <textarea class="modal-input" id="bioInput" placeholder="О себе" rows="3" style="resize: none;"></textarea>
+      <div class="modal-buttons">
+        <button class="modal-btn modal-btn-secondary" id="cancelBioBtn">Отмена</button>
+        <button class="modal-btn modal-btn-primary" id="saveBioBtn">Сохранить</button>
+      </div>
+    </div>
+  </div>
+
   <input type="file" id="avatarFileInput" accept="image/*" style="display:none">
 
   <script>
-    if (localStorage.getItem('isLoggedIn') !== 'true') {
-      window.location.href = 'login.html';
-    }
+    const urlParams = new URLSearchParams(window.location.search);
+    const viewType = urlParams.get('view') || 'own';
+    
+    let userData;
+    let isOwnProfile = false;
 
-    let userData = JSON.parse(localStorage.getItem('userData') || JSON.stringify({
-      name: 'Алексей Смирнов',
-      phone: '+7 (999) 123-45-67',
-      avatar: '👤'
-    }));
+    if (viewType === 'own') {
+      // Свой профиль
+      isOwnProfile = true;
+      userData = JSON.parse(localStorage.getItem('userData') || JSON.stringify({
+        name: 'Алексей Смирнов',
+        phone: '+7 (999) 123-45-67',
+        bio: 'Привет! Я использую DxS',
+        avatar: '👤'
+      }));
+    } else {
+      // Чужой профиль (собеседника)
+      isOwnProfile = false;
+      userData = {
+        name: decodeURIComponent(urlParams.get('name') || 'Пользователь'),
+        phone: decodeURIComponent(urlParams.get('phone') || ''),
+        bio: decodeURIComponent(urlParams.get('bio') || ''),
+        avatar: decodeURIComponent(urlParams.get('avatar') || '👤')
+      };
+    }
 
     function updateUI() {
       document.getElementById('profileName').textContent = userData.name;
       document.getElementById('profilePhone').textContent = userData.phone;
+      document.getElementById('profileBio').textContent = userData.bio || 'Нет описания';
       
       const avatarEl = document.getElementById('avatarEmoji');
       if (userData.avatar && userData.avatar.startsWith('data:image')) {
@@ -374,58 +435,125 @@
         avatarEl.innerHTML = userData.avatar || '👤';
         avatarEl.style.fontSize = '48px';
       }
+
+      // Показываем/скрываем кнопки редактирования и выхода
+      const editAvatarBtn = document.getElementById('editAvatarBtn');
+      const logoutBtn = document.getElementById('logoutBtn');
+      const settingsCard = document.getElementById('settingsCard');
+      
+      if (isOwnProfile) {
+        editAvatarBtn.style.display = 'flex';
+        logoutBtn.style.display = 'block';
+        settingsCard.style.display = 'block';
+        
+        // Делаем имя и телефон кликабельными для редактирования
+        document.getElementById('profileName').style.cursor = 'pointer';
+        document.getElementById('profilePhone').style.cursor = 'pointer';
+        document.getElementById('profileBio').style.cursor = 'pointer';
+      } else {
+        editAvatarBtn.style.display = 'none';
+        logoutBtn.style.display = 'none';
+        settingsCard.style.display = 'none';
+        
+        document.getElementById('profileName').style.cursor = 'default';
+        document.getElementById('profilePhone').style.cursor = 'default';
+        document.getElementById('profileBio').style.cursor = 'default';
+      }
     }
 
-    // Редактирование имени
-    const nameModal = document.getElementById('nameModal');
-    
-    document.getElementById('profileName').addEventListener('click', () => {
-      document.getElementById('nameInput').value = userData.name;
-      nameModal.classList.add('active');
-    });
+    if (isOwnProfile) {
+      // Редактирование имени
+      const nameModal = document.getElementById('nameModal');
+      document.getElementById('profileName').addEventListener('click', () => {
+        document.getElementById('nameInput').value = userData.name;
+        nameModal.classList.add('active');
+      });
 
-    document.getElementById('cancelNameBtn').addEventListener('click', () => {
-      nameModal.classList.remove('active');
-    });
+      document.getElementById('cancelNameBtn').addEventListener('click', () => {
+        nameModal.classList.remove('active');
+      });
 
-    document.getElementById('saveNameBtn').addEventListener('click', () => {
-      const newName = document.getElementById('nameInput').value.trim();
-      if (newName) {
-        userData.name = newName;
-        localStorage.setItem('userData', JSON.stringify(userData));
-        updateUI();
-      }
-      nameModal.classList.remove('active');
-    });
-
-    // Смена аватара
-    document.getElementById('editAvatarBtn').addEventListener('click', () => {
-      const avatarInput = document.getElementById('avatarFileInput');
-      avatarInput.onchange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = (event) => {
-            userData.avatar = event.target.result;
-            localStorage.setItem('userData', JSON.stringify(userData));
-            updateUI();
-          };
-          reader.readAsDataURL(file);
+      document.getElementById('saveNameBtn').addEventListener('click', () => {
+        const newName = document.getElementById('nameInput').value.trim();
+        if (newName) {
+          userData.name = newName;
+          localStorage.setItem('userData', JSON.stringify(userData));
+          updateUI();
         }
-      };
-      avatarInput.click();
-    });
+        nameModal.classList.remove('active');
+      });
+
+      // Редактирование номера
+      const phoneModal = document.getElementById('phoneModal');
+      document.getElementById('profilePhone').addEventListener('click', () => {
+        document.getElementById('phoneInput').value = userData.phone;
+        phoneModal.classList.add('active');
+      });
+
+      document.getElementById('cancelPhoneBtn').addEventListener('click', () => {
+        phoneModal.classList.remove('active');
+      });
+
+      document.getElementById('savePhoneBtn').addEventListener('click', () => {
+        const newPhone = document.getElementById('phoneInput').value.trim();
+        if (newPhone) {
+          userData.phone = newPhone;
+          localStorage.setItem('userData', JSON.stringify(userData));
+          updateUI();
+        }
+        phoneModal.classList.remove('active');
+      });
+
+      // Редактирование био
+      const bioModal = document.getElementById('bioModal');
+      document.getElementById('profileBio').addEventListener('click', () => {
+        document.getElementById('bioInput').value = userData.bio;
+        bioModal.classList.add('active');
+      });
+
+      document.getElementById('cancelBioBtn').addEventListener('click', () => {
+        bioModal.classList.remove('active');
+      });
+
+      document.getElementById('saveBioBtn').addEventListener('click', () => {
+        const newBio = document.getElementById('bioInput').value.trim();
+        if (newBio) {
+          userData.bio = newBio;
+          localStorage.setItem('userData', JSON.stringify(userData));
+          updateUI();
+        }
+        bioModal.classList.remove('active');
+      });
+
+      // Смена аватара
+      document.getElementById('editAvatarBtn').addEventListener('click', () => {
+        const avatarInput = document.getElementById('avatarFileInput');
+        avatarInput.onchange = (e) => {
+          const file = e.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+              userData.avatar = event.target.result;
+              localStorage.setItem('userData', JSON.stringify(userData));
+              updateUI();
+            };
+            reader.readAsDataURL(file);
+          }
+        };
+        avatarInput.click();
+      });
+
+      // Выход
+      document.getElementById('logoutBtn').addEventListener('click', () => {
+        localStorage.removeItem('isLoggedIn');
+        window.location.href = 'login.html';
+      });
+    }
 
     // Настройки (демо)
     document.getElementById('privacySettings').addEventListener('click', () => alert('Настройки конфиденциальности (демо)'));
     document.getElementById('themeSettings').addEventListener('click', () => alert('Настройки оформления (демо)'));
     document.getElementById('devicesSettings').addEventListener('click', () => alert('Управление устройствами (демо)'));
-
-    // Выход
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-      localStorage.removeItem('isLoggedIn');
-      window.location.href = 'login.html';
-    });
 
     updateUI();
   </script>
