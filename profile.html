@@ -132,45 +132,107 @@
       transform: scale(0.92);
     }
 
+    .name-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
     .profile-name {
       font-size: 28px;
       font-weight: 600;
       color: white;
       text-align: center;
-      margin-bottom: 8px;
+    }
+
+    .edit-name-btn {
+      width: 32px;
+      height: 32px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
-      padding: 4px 12px;
-      border-radius: 12px;
+      font-size: 14px;
       transition: all 0.2s ease;
     }
 
-    .profile-name:active {
-      background: rgba(255, 255, 255, 0.1);
+    .edit-name-btn:active {
+      transform: scale(0.92);
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .phone-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 12px;
     }
 
     .profile-phone {
       font-size: 14px;
       color: rgba(255, 255, 255, 0.6);
       text-align: center;
+    }
+
+    .edit-phone-btn {
+      width: 28px;
+      height: 28px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
-      padding: 4px 12px;
-      border-radius: 12px;
+      font-size: 12px;
       transition: all 0.2s ease;
     }
 
-    .profile-phone:active {
-      background: rgba(255, 255, 255, 0.1);
+    .edit-phone-btn:active {
+      transform: scale(0.92);
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .bio-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      width: 100%;
+      margin-top: 8px;
     }
 
     .profile-bio {
       font-size: 14px;
       color: rgba(255, 255, 255, 0.7);
       text-align: center;
-      margin-top: 12px;
       padding: 12px;
       background: rgba(255, 255, 255, 0.05);
       border-radius: 16px;
+      flex: 1;
+      max-width: 300px;
+    }
+
+    .edit-bio-btn {
+      width: 28px;
+      height: 28px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
+      font-size: 12px;
+      transition: all 0.2s ease;
+    }
+
+    .edit-bio-btn:active {
+      transform: scale(0.92);
+      background: rgba(255, 255, 255, 0.2);
     }
 
     .info-card {
@@ -232,6 +294,7 @@
       background: rgba(255, 100, 100, 0.3);
     }
 
+    /* Модальное окно */
     .modal {
       position: fixed;
       top: 0;
@@ -288,6 +351,21 @@
       box-shadow: 0 0 0 3px rgba(91, 124, 255, 0.2);
     }
 
+    .modal-textarea {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 14px;
+      padding: 14px 16px;
+      color: white;
+      font-size: 14px;
+      margin-bottom: 20px;
+      outline: none;
+      resize: vertical;
+      font-family: inherit;
+      min-height: 100px;
+    }
+
     .modal-buttons {
       display: flex;
       gap: 12px;
@@ -334,9 +412,21 @@
         </div>
         <div class="edit-avatar-btn" id="editAvatarBtn" style="display: none;">✎</div>
       </div>
-      <div class="profile-name" id="profileName">Загрузка...</div>
-      <div class="profile-phone" id="profilePhone"></div>
-      <div class="profile-bio" id="profileBio"></div>
+      
+      <div class="name-container">
+        <div class="profile-name" id="profileName">Загрузка...</div>
+        <div class="edit-name-btn" id="editNameBtn" style="display: none;">✎</div>
+      </div>
+      
+      <div class="phone-container">
+        <div class="profile-phone" id="profilePhone"></div>
+        <div class="edit-phone-btn" id="editPhoneBtn" style="display: none;">✎</div>
+      </div>
+      
+      <div class="bio-container">
+        <div class="profile-bio" id="profileBio"></div>
+        <div class="edit-bio-btn" id="editBioBtn" style="display: none;">✎</div>
+      </div>
     </div>
 
     <div class="info-card" id="settingsCard">
@@ -359,7 +449,7 @@
     <div class="logout-btn" id="logoutBtn" style="display: none;">Выйти из аккаунта</div>
   </div>
 
-  <!-- Модальные окна для редактирования -->
+  <!-- Модальные окна -->
   <div id="nameModal" class="modal">
     <div class="modal-content">
       <div class="modal-title">Редактировать имя</div>
@@ -385,7 +475,7 @@
   <div id="bioModal" class="modal">
     <div class="modal-content">
       <div class="modal-title">Редактировать описание</div>
-      <textarea class="modal-input" id="bioInput" placeholder="О себе" rows="3" style="resize: none;"></textarea>
+      <textarea class="modal-textarea" id="bioInput" placeholder="О себе"></textarea>
       <div class="modal-buttons">
         <button class="modal-btn modal-btn-secondary" id="cancelBioBtn">Отмена</button>
         <button class="modal-btn modal-btn-primary" id="saveBioBtn">Сохранить</button>
@@ -403,7 +493,6 @@
     let isOwnProfile = false;
 
     if (viewType === 'own') {
-      // Свой профиль
       isOwnProfile = true;
       userData = JSON.parse(localStorage.getItem('userData') || JSON.stringify({
         name: 'Алексей Смирнов',
@@ -412,7 +501,6 @@
         avatar: '👤'
       }));
     } else {
-      // Чужой профиль (собеседника)
       isOwnProfile = false;
       userData = {
         name: decodeURIComponent(urlParams.get('name') || 'Пользователь'),
@@ -436,35 +524,35 @@
         avatarEl.style.fontSize = '48px';
       }
 
-      // Показываем/скрываем кнопки редактирования и выхода
+      // Показываем/скрываем кнопки редактирования
       const editAvatarBtn = document.getElementById('editAvatarBtn');
+      const editNameBtn = document.getElementById('editNameBtn');
+      const editPhoneBtn = document.getElementById('editPhoneBtn');
+      const editBioBtn = document.getElementById('editBioBtn');
       const logoutBtn = document.getElementById('logoutBtn');
       const settingsCard = document.getElementById('settingsCard');
       
       if (isOwnProfile) {
         editAvatarBtn.style.display = 'flex';
+        editNameBtn.style.display = 'flex';
+        editPhoneBtn.style.display = 'flex';
+        editBioBtn.style.display = 'flex';
         logoutBtn.style.display = 'block';
         settingsCard.style.display = 'block';
-        
-        // Делаем имя и телефон кликабельными для редактирования
-        document.getElementById('profileName').style.cursor = 'pointer';
-        document.getElementById('profilePhone').style.cursor = 'pointer';
-        document.getElementById('profileBio').style.cursor = 'pointer';
       } else {
         editAvatarBtn.style.display = 'none';
+        editNameBtn.style.display = 'none';
+        editPhoneBtn.style.display = 'none';
+        editBioBtn.style.display = 'none';
         logoutBtn.style.display = 'none';
         settingsCard.style.display = 'none';
-        
-        document.getElementById('profileName').style.cursor = 'default';
-        document.getElementById('profilePhone').style.cursor = 'default';
-        document.getElementById('profileBio').style.cursor = 'default';
       }
     }
 
     if (isOwnProfile) {
       // Редактирование имени
       const nameModal = document.getElementById('nameModal');
-      document.getElementById('profileName').addEventListener('click', () => {
+      document.getElementById('editNameBtn').addEventListener('click', () => {
         document.getElementById('nameInput').value = userData.name;
         nameModal.classList.add('active');
       });
@@ -485,7 +573,7 @@
 
       // Редактирование номера
       const phoneModal = document.getElementById('phoneModal');
-      document.getElementById('profilePhone').addEventListener('click', () => {
+      document.getElementById('editPhoneBtn').addEventListener('click', () => {
         document.getElementById('phoneInput').value = userData.phone;
         phoneModal.classList.add('active');
       });
@@ -506,7 +594,7 @@
 
       // Редактирование био
       const bioModal = document.getElementById('bioModal');
-      document.getElementById('profileBio').addEventListener('click', () => {
+      document.getElementById('editBioBtn').addEventListener('click', () => {
         document.getElementById('bioInput').value = userData.bio;
         bioModal.classList.add('active');
       });
