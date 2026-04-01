@@ -269,6 +269,12 @@
       window.location.href = 'login.html';
     }
 
+    // Данные пользователей (собеседников)
+    const usersData = {
+      user1: { name: "Анна Смирнова", phone: "+7 (999) 123-45-67", bio: "Дизайнер интерфейсов", avatar: "👩" },
+      user2: { name: "Дмитрий Петров", phone: "+7 (999) 234-56-78", bio: "Разработчик", avatar: "👨" }
+    };
+
     const chatsData = {
       all: [
         { name: "Анна Смирнова", message: "Привет!", time: "14:32", avatar: "👩", type: "personal", id: "user1" },
@@ -346,7 +352,7 @@
     document.querySelectorAll('.nav-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         if (btn.dataset.nav === 'profile') {
-          window.location.href = 'profile.html';
+          window.location.href = 'profile.html?view=own';
         }
       });
     });
