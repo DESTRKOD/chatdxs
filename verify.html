@@ -187,11 +187,9 @@
   </div>
 
   <script>
-    // Отображаем номер телефона
     const phone = localStorage.getItem('tempPhone') || '+7 (999) 123-45-67';
     document.getElementById('phoneDisplay').textContent = phone;
 
-    // Настройка полей кода
     const inputs = document.querySelectorAll('.code-digit');
     
     inputs.forEach((input, index) => {
@@ -230,11 +228,11 @@
       if (allFilled) {
         localStorage.setItem('isLoggedIn', 'true');
         
-        // Если нет данных пользователя, создаем временные
         if (!localStorage.getItem('userData')) {
           const userData = {
             name: 'Пользователь',
             phone: phone,
+            bio: 'Привет! Я использую DxS',
             avatar: '👤'
           };
           localStorage.setItem('userData', JSON.stringify(userData));
