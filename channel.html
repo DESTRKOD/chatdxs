@@ -113,7 +113,6 @@
       align-items: center;
       justify-content: center;
       font-size: 20px;
-      cursor: pointer;
     }
 
     .messages-area {
@@ -186,14 +185,6 @@
       transform: translateX(20px);
     }
 
-    .admin-badge {
-      background: rgba(91, 124, 255, 0.3);
-      padding: 4px 8px;
-      border-radius: 8px;
-      font-size: 11px;
-      margin-left: 8px;
-    }
-
     .admin-panel {
       padding: 12px 16px;
       background: rgba(255, 255, 255, 0.05);
@@ -227,7 +218,7 @@
       <div class="back-button" onclick="window.location.href='chats.html'">←</div>
       <div class="chat-header-center" id="infoClick">
         <div class="chat-user-name" id="channelName">Загрузка...</div>
-        <div class="chat-user-status" id="channelStats">канал</div>
+        <div class="chat-user-status">канал</div>
       </div>
       <div class="chat-user-avatar" id="channelAvatar">📢</div>
     </div>
@@ -251,26 +242,17 @@
     document.getElementById('channelName').textContent = channelName;
     document.getElementById('channelAvatar').textContent = channelAvatar;
 
-    // Данные канала
     let channelData = JSON.parse(localStorage.getItem(`channel_${channelId}`) || JSON.stringify({
       name: channelName,
       avatar: channelAvatar,
       subscribers: 156,
       admins: ['Алексей Смирнов'],
-      description: 'Официальный канал DxS. Здесь публикуются новости и обновления.',
+      description: 'Официальный канал DxS.',
       messages: [
         { text: 'Добро пожаловать в канал!', time: new Date('2024-01-15T10:00:00'), author: 'Админ' }
       ]
     }));
 
-    document.getElementById('channelStats').textContent = `${channelData.subscribers} подписчиков`;
-
-    // Показываем панель админа
-    if (isAdmin) {
-      document.getElementById('adminPanel').style.display = 'block';
-    }
-
-    // Звук
     let soundEnabled = JSON.parse(localStorage.getItem(`sound_${channelId}`) || 'true');
     const soundToggle = document.getElementById('soundToggle');
     soundToggle.classList.toggle('active', soundEnabled);
@@ -302,13 +284,12 @@
       area.scrollTop = area.scrollHeight;
     }
 
-    // Переход в инфо о канале
     document.getElementById('infoClick').addEventListener('click', () => {
       window.location.href = `channel-info.html?id=${channelId}`;
     });
 
-    // Редактирование (для админа)
     if (isAdmin) {
+      document.getElementById('adminPanel').style.display = 'block';
       document.getElementById('editChannelBtn').addEventListener('click', () => {
         const newName = prompt('Название канала', channelData.name);
         if (newName) {
