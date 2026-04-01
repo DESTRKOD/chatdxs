@@ -37,6 +37,11 @@
       animation: float 20s ease-in-out infinite;
     }
 
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(20px, -20px) scale(1.05); }
+    }
+
     .blob-1 { width: 400px; height: 400px; background: radial-gradient(circle, #5B7CFF, transparent); top: -150px; right: -100px; }
     .blob-2 { width: 500px; height: 500px; background: radial-gradient(circle, #7FA1FF, transparent); bottom: -150px; right: -120px; opacity: 0.35; }
     .blob-3 { width: 300px; height: 300px; background: radial-gradient(circle, #5B7CFF, transparent); bottom: 20%; left: -150px; opacity: 0.2; }
@@ -75,10 +80,17 @@
       transform: scale(0.92);
     }
 
-    .avatar-section {
+    .profile-header {
       display: flex;
-      justify-content: center;
-      margin-bottom: 24px;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 32px;
+      position: relative;
+    }
+
+    .avatar-container {
+      position: relative;
+      margin-bottom: 16px;
     }
 
     .avatar {
@@ -105,6 +117,41 @@
       transform: scale(0.96);
     }
 
+    .edit-avatar-btn {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 32px;
+      height: 32px;
+      background: rgba(91, 124, 255, 0.9);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+      backdrop-filter: blur(4px);
+      transition: all 0.2s ease;
+    }
+
+    .edit-avatar-btn:active {
+      transform: scale(0.92);
+    }
+
+    .profile-name {
+      font-size: 28px;
+      font-weight: 600;
+      color: white;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .profile-phone {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+      text-align: center;
+    }
+
     .info-card {
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255, 255, 255, 0.1);
@@ -113,42 +160,6 @@
       padding: 20px;
       margin-bottom: 16px;
       animation: fadeSlideUp 0.4s ease-out;
-    }
-
-    .info-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 0;
-    }
-
-    .info-label {
-      font-size: 14px;
-      color: rgba(255, 255, 255, 0.6);
-    }
-
-    .info-value {
-      font-size: 16px;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .edit-btn {
-      width: 32px;
-      height: 32px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 8px;
-      transition: all 0.2s ease;
-    }
-
-    .edit-btn:active {
-      transform: scale(0.92);
     }
 
     .settings-list {
@@ -251,19 +262,9 @@
       outline: none;
     }
 
-    .modal-textarea {
-      width: 100%;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 14px;
-      padding: 14px 16px;
-      color: white;
-      font-size: 14px;
-      margin-bottom: 20px;
-      outline: none;
-      resize: vertical;
-      font-family: inherit;
-      min-height: 80px;
+    .modal-input:focus {
+      border-color: #5B7CFF;
+      box-shadow: 0 0 0 3px rgba(91, 124, 255, 0.2);
     }
 
     .modal-buttons {
@@ -305,45 +306,30 @@
   <div class="container">
     <div class="back-button" onclick="window.location.href='chats.html'">←</div>
 
-    <div class="avatar-section">
-      <div class="avatar" id="profileAvatar">
-        <span id="avatarEmoji">👤</span>
-      </div>
-    </div>
-
-    <div class="info-card">
-      <div class="info-row">
-        <div class="info-label">Имя</div>
-        <div class="info-value">
-          <span id="profileName">Загрузка...</span>
-          <div class="edit-btn" id="editNameBtn">✎</div>
+    <div class="profile-header">
+      <div class="avatar-container">
+        <div class="avatar" id="profileAvatar">
+          <span id="avatarEmoji">👤</span>
         </div>
+        <div class="edit-avatar-btn" id="editAvatarBtn">✎</div>
       </div>
-      <div class="info-row">
-        <div class="info-label">Телефон</div>
-        <div class="info-value" id="profilePhone">+7 (999) 123-45-67</div>
-      </div>
+      <div class="profile-name" id="profileName">Загрузка...</div>
+      <div class="profile-phone" id="profilePhone">+7 (999) 123-45-67</div>
     </div>
 
     <div class="info-card">
-      <div class="info-label" style="margin-bottom: 8px;">О себе</div>
-      <div class="info-value" id="profileBio" style="cursor:pointer;">Загрузка...</div>
-    </div>
-
-    <div class="info-card">
-      <div class="info-label" style="margin-bottom: 12px;">Настройки</div>
       <div class="settings-list">
         <div class="settings-item" id="privacySettings">
           <div class="settings-icon">🔒</div>
           <div>Конфиденциальность</div>
         </div>
-        <div class="settings-item" id="devicesSettings">
-          <div class="settings-icon">📱</div>
-          <div>Устройства</div>
-        </div>
         <div class="settings-item" id="themeSettings">
           <div class="settings-icon">🎨</div>
           <div>Оформление</div>
+        </div>
+        <div class="settings-item" id="devicesSettings">
+          <div class="settings-icon">📱</div>
+          <div>Устройства</div>
         </div>
       </div>
     </div>
@@ -351,98 +337,70 @@
     <div class="logout-btn" id="logoutBtn">Выйти из аккаунта</div>
   </div>
 
-  <!-- Модальное окно -->
-  <div id="modal" class="modal">
+  <!-- Модальное окно для редактирования имени -->
+  <div id="nameModal" class="modal">
     <div class="modal-content">
-      <div class="modal-title" id="modalTitle">Редактировать</div>
-      <input type="text" class="modal-input" id="modalInput" style="display:none;">
-      <textarea class="modal-textarea" id="modalTextarea" style="display:none;"></textarea>
+      <div class="modal-title">Редактировать имя</div>
+      <input type="text" class="modal-input" id="nameInput" placeholder="Ваше имя">
       <div class="modal-buttons">
-        <button class="modal-btn modal-btn-secondary" id="modalCancel">Отмена</button>
-        <button class="modal-btn modal-btn-primary" id="modalSave">Сохранить</button>
+        <button class="modal-btn modal-btn-secondary" id="cancelNameBtn">Отмена</button>
+        <button class="modal-btn modal-btn-primary" id="saveNameBtn">Сохранить</button>
       </div>
     </div>
   </div>
 
-  <input type="file" id="avatarInput" accept="image/*" style="display:none">
+  <input type="file" id="avatarFileInput" accept="image/*" style="display:none">
 
   <script>
-    // Проверка авторизации
     if (localStorage.getItem('isLoggedIn') !== 'true') {
       window.location.href = 'login.html';
     }
 
-    // Загрузка данных профиля
     let userData = JSON.parse(localStorage.getItem('userData') || JSON.stringify({
       name: 'Алексей Смирнов',
       phone: '+7 (999) 123-45-67',
-      bio: 'Дизайнер интерфейсов. Люблю минимализм.',
       avatar: '👤'
     }));
 
     function updateUI() {
       document.getElementById('profileName').textContent = userData.name;
       document.getElementById('profilePhone').textContent = userData.phone;
-      document.getElementById('profileBio').textContent = userData.bio;
       
       const avatarEl = document.getElementById('avatarEmoji');
-      if (userData.avatar.startsWith('data:image')) {
+      if (userData.avatar && userData.avatar.startsWith('data:image')) {
         avatarEl.innerHTML = `<img src="${userData.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
         avatarEl.style.fontSize = '0';
       } else {
-        avatarEl.innerHTML = userData.avatar;
+        avatarEl.innerHTML = userData.avatar || '👤';
         avatarEl.style.fontSize = '48px';
       }
     }
 
-    // Модальное окно
-    const modal = document.getElementById('modal');
-    const modalTitle = document.getElementById('modalTitle');
-    const modalInput = document.getElementById('modalInput');
-    const modalTextarea = document.getElementById('modalTextarea');
-    let currentEditType = '';
-
-    function openModal(type, value) {
-      currentEditType = type;
-      if (type === 'name') {
-        modalTitle.textContent = 'Редактировать имя';
-        modalInput.style.display = 'block';
-        modalTextarea.style.display = 'none';
-        modalInput.value = value;
-      } else if (type === 'bio') {
-        modalTitle.textContent = 'Редактировать описание';
-        modalInput.style.display = 'none';
-        modalTextarea.style.display = 'block';
-        modalTextarea.value = value;
-      }
-      modal.classList.add('active');
-    }
-
-    function closeModal() {
-      modal.classList.remove('active');
-    }
-
-    function saveModal() {
-      if (currentEditType === 'name') {
-        userData.name = modalInput.value.trim() || userData.name;
-      } else if (currentEditType === 'bio') {
-        userData.bio = modalTextarea.value.trim() || userData.bio;
-      }
-      localStorage.setItem('userData', JSON.stringify(userData));
-      updateUI();
-      closeModal();
-    }
-
-    // Обработчики
-    document.getElementById('editNameBtn').addEventListener('click', () => openModal('name', userData.name));
-    document.getElementById('profileBio').addEventListener('click', () => openModal('bio', userData.bio));
+    // Редактирование имени
+    const nameModal = document.getElementById('nameModal');
     
-    document.getElementById('modalCancel').addEventListener('click', closeModal);
-    document.getElementById('modalSave').addEventListener('click', saveModal);
-    
+    document.getElementById('profileName').addEventListener('click', () => {
+      document.getElementById('nameInput').value = userData.name;
+      nameModal.classList.add('active');
+    });
+
+    document.getElementById('cancelNameBtn').addEventListener('click', () => {
+      nameModal.classList.remove('active');
+    });
+
+    document.getElementById('saveNameBtn').addEventListener('click', () => {
+      const newName = document.getElementById('nameInput').value.trim();
+      if (newName) {
+        userData.name = newName;
+        localStorage.setItem('userData', JSON.stringify(userData));
+        updateUI();
+      }
+      nameModal.classList.remove('active');
+    });
+
     // Смена аватара
-    document.getElementById('profileAvatar').addEventListener('click', () => {
-      const avatarInput = document.getElementById('avatarInput');
+    document.getElementById('editAvatarBtn').addEventListener('click', () => {
+      const avatarInput = document.getElementById('avatarFileInput');
       avatarInput.onchange = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -460,8 +418,8 @@
 
     // Настройки (демо)
     document.getElementById('privacySettings').addEventListener('click', () => alert('Настройки конфиденциальности (демо)'));
-    document.getElementById('devicesSettings').addEventListener('click', () => alert('Управление устройствами (демо)'));
     document.getElementById('themeSettings').addEventListener('click', () => alert('Настройки оформления (демо)'));
+    document.getElementById('devicesSettings').addEventListener('click', () => alert('Управление устройствами (демо)'));
 
     // Выход
     document.getElementById('logoutBtn').addEventListener('click', () => {
