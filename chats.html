@@ -265,7 +265,10 @@
   </div>
 
   <script>
-    // Данные чатов
+    if (localStorage.getItem('isLoggedIn') !== 'true') {
+      window.location.href = 'login.html';
+    }
+
     const chatsData = {
       all: [
         { name: "Анна Смирнова", message: "Привет!", time: "14:32", avatar: "👩", type: "personal", id: "user1" },
@@ -285,11 +288,6 @@
 
     let currentTab = 'all';
     let searchQuery = '';
-
-    // Проверка авторизации
-    if (localStorage.getItem('isLoggedIn') !== 'true') {
-      window.location.href = 'login.html';
-    }
 
     function renderChats() {
       let chats = [...chatsData[currentTab]];
@@ -331,7 +329,6 @@
       });
     }
 
-    // Переключение табов
     document.querySelectorAll('.tab').forEach(tab => {
       tab.addEventListener('click', () => {
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -341,13 +338,11 @@
       });
     });
 
-    // Поиск
     document.getElementById('searchInput').addEventListener('input', (e) => {
       searchQuery = e.target.value;
       renderChats();
     });
 
-    // Навигация
     document.querySelectorAll('.nav-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         if (btn.dataset.nav === 'profile') {
