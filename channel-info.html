@@ -37,6 +37,11 @@
       animation: float 20s ease-in-out infinite;
     }
 
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(20px, -20px) scale(1.05); }
+    }
+
     .blob-1 { width: 400px; height: 400px; background: radial-gradient(circle, #5B7CFF, transparent); top: -150px; right: -100px; }
     .blob-2 { width: 500px; height: 500px; background: radial-gradient(circle, #7FA1FF, transparent); bottom: -150px; right: -120px; opacity: 0.35; }
     .blob-3 { width: 300px; height: 300px; background: radial-gradient(circle, #5B7CFF, transparent); bottom: 20%; left: -150px; opacity: 0.2; }
@@ -116,19 +121,19 @@
     .stats-row {
       display: flex;
       gap: 16px;
-      margin-top: 16px;
+      margin-bottom: 16px;
     }
 
     .stat {
       flex: 1;
       text-align: center;
-      padding: 12px;
+      padding: 16px;
       background: rgba(255, 255, 255, 0.03);
       border-radius: 16px;
     }
 
     .stat-number {
-      font-size: 24px;
+      font-size: 28px;
       font-weight: 600;
     }
 
@@ -213,7 +218,7 @@
       avatar: '📢',
       subscribers: 156,
       admins: ['Алексей Смирнов'],
-      description: 'Официальный канал DxS. Здесь публикуются новости и обновления.'
+      description: 'Официальный канал DxS.'
     }));
 
     document.getElementById('channelAvatar').textContent = channelData.avatar;
