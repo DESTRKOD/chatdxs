@@ -269,26 +269,20 @@
       window.location.href = 'login.html';
     }
 
-    // Данные пользователей (собеседников)
-    const usersData = {
-      user1: { name: "Анна Смирнова", phone: "+7 (999) 123-45-67", bio: "Дизайнер интерфейсов", avatar: "👩" },
-      user2: { name: "Дмитрий Петров", phone: "+7 (999) 234-56-78", bio: "Разработчик", avatar: "👨" }
-    };
-
     const chatsData = {
       all: [
-        { name: "Анна Смирнова", message: "Привет!", time: "14:32", avatar: "👩", type: "personal", id: "user1" },
-        { name: "Дмитрий Петров", message: "Скинь фото", time: "13:15", avatar: "👨", type: "personal", id: "user2" },
-        { name: "Дизайн-канал", message: "Новый макет", time: "11:20", avatar: "🎨", type: "channel", id: "channel1", isAdmin: false },
-        { name: "Новости DxS", message: "Обновление v2.0", time: "Вчера", avatar: "📰", type: "channel", id: "channel2", isAdmin: false }
+        { name: "Анна Смирнова", message: "Привет!", time: "14:32", avatar: "👩", type: "personal", id: "anna" },
+        { name: "Дмитрий Петров", message: "Скинь фото", time: "13:15", avatar: "👨", type: "personal", id: "dmitry" },
+        { name: "Дизайн-канал", message: "Новый макет", time: "11:20", avatar: "🎨", type: "channel", id: "design" },
+        { name: "Новости DxS", message: "Обновление v2.0", time: "Вчера", avatar: "📰", type: "channel", id: "news" }
       ],
       personal: [
-        { name: "Анна Смирнова", message: "Привет!", time: "14:32", avatar: "👩", type: "personal", id: "user1" },
-        { name: "Дмитрий Петров", message: "Скинь фото", time: "13:15", avatar: "👨", type: "personal", id: "user2" }
+        { name: "Анна Смирнова", message: "Привет!", time: "14:32", avatar: "👩", type: "personal", id: "anna" },
+        { name: "Дмитрий Петров", message: "Скинь фото", time: "13:15", avatar: "👨", type: "personal", id: "dmitry" }
       ],
       channels: [
-        { name: "Дизайн-канал", message: "Новый макет", time: "11:20", avatar: "🎨", type: "channel", id: "channel1", isAdmin: false },
-        { name: "Новости DxS", message: "Обновление v2.0", time: "Вчера", avatar: "📰", type: "channel", id: "channel2", isAdmin: false }
+        { name: "Дизайн-канал", message: "Новый макет", time: "11:20", avatar: "🎨", type: "channel", id: "design" },
+        { name: "Новости DxS", message: "Обновление v2.0", time: "Вчера", avatar: "📰", type: "channel", id: "news" }
       ]
     };
 
@@ -308,7 +302,7 @@
       }
       
       container.innerHTML = chats.map(chat => `
-        <div class="chat-item" data-name="${chat.name}" data-avatar="${chat.avatar}" data-type="${chat.type}" data-id="${chat.id}" data-isadmin="${chat.isAdmin || false}">
+        <div class="chat-item" data-name="${chat.name}" data-avatar="${chat.avatar}" data-type="${chat.type}" data-id="${chat.id}">
           <div class="avatar">${chat.avatar}</div>
           <div class="chat-info">
             <div class="chat-name">${chat.name}</div>
@@ -324,10 +318,9 @@
           const id = el.dataset.id;
           const name = el.dataset.name;
           const avatar = el.dataset.avatar;
-          const isAdmin = el.dataset.isadmin === 'true';
           
           if (type === 'channel') {
-            window.location.href = `channel.html?id=${id}&name=${encodeURIComponent(name)}&avatar=${encodeURIComponent(avatar)}&isAdmin=${isAdmin}`;
+            window.location.href = `channel.html?id=${id}&name=${encodeURIComponent(name)}&avatar=${encodeURIComponent(avatar)}`;
           } else {
             window.location.href = `chat.html?id=${id}&name=${encodeURIComponent(name)}&avatar=${encodeURIComponent(avatar)}`;
           }
@@ -352,7 +345,7 @@
     document.querySelectorAll('.nav-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         if (btn.dataset.nav === 'profile') {
-          window.location.href = 'profile.html?view=own';
+          window.location.href = 'profile.html';
         }
       });
     });
