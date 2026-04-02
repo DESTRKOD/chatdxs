@@ -190,6 +190,11 @@
   <div class="blob blob-2"></div>
   <div class="blob blob-3"></div>
 
+  <div class="chat-header-center" id="infoClick">
+    <div class="chat-user-name" id="channelName">Загрузка...</div>
+      <div class="chat-user-status">канал</div>
+  </div>
+
   <div class="chat-container">
     <div class="chat-header">
       <div class="back-button" onclick="window.location.href='chats.html'">←</div>
@@ -214,6 +219,9 @@
 
     document.getElementById('channelName').textContent = channelName;
     document.getElementById('channelAvatar').textContent = channelAvatar;
+    document.getElementById('infoClick').addEventListener('click', () => {
+  window.location.href = `channel-info.html?id=${channelId}`;
+});
 
     let channelMessages = JSON.parse(localStorage.getItem(`channel_messages_${channelId}`) || JSON.stringify([
       { text: 'Добро пожаловать в канал!', time: new Date('2024-01-15T10:00:00'), author: 'Админ' }
