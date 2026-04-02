@@ -200,7 +200,7 @@
           <input type="tel" class="phone-input" id="phoneInput" placeholder="Введите номер телефона">
         </div>
         <button class="btn-continue" id="continueBtn">Продолжить</button>
-        <a href="reg.html" class="btn-create">Создать аккаунт</a>
+        <a href="#" class="btn-create" id="createAccountBtn">Создать аккаунт</a>
       </div>
     </div>
   </div>
@@ -242,6 +242,11 @@
       localStorage.setItem('tempPhone', formatPhone(phone, code));
       localStorage.setItem('tempCountryCode', code);
       window.location.href = 'verify.html';
+    });
+
+    document.getElementById('createAccountBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.href = 'reg.html';
     });
   </script>
 </body>
