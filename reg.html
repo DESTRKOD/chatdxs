@@ -222,6 +222,10 @@
         avatar: '👤'
       };
       localStorage.setItem('userData', JSON.stringify(userData));
+      localStorage.setItem('profileName', name);
+      localStorage.setItem('profilePhone', phone);
+      localStorage.setItem('profileBio', 'Привет! Я использую DxS');
+      localStorage.setItem('profileAvatar', '👤');
       localStorage.setItem('isLoggedIn', 'true');
       
       alert('Регистрация успешна!');
