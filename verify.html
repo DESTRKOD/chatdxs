@@ -228,14 +228,11 @@
       if (allFilled) {
         localStorage.setItem('isLoggedIn', 'true');
         
-        if (!localStorage.getItem('userData')) {
-          const userData = {
-            name: 'Пользователь',
-            phone: phone,
-            bio: 'Привет! Я использую DxS',
-            avatar: '👤'
-          };
-          localStorage.setItem('userData', JSON.stringify(userData));
+        if (!localStorage.getItem('profileName')) {
+          localStorage.setItem('profileName', 'Пользователь');
+          localStorage.setItem('profilePhone', phone);
+          localStorage.setItem('profileBio', 'Привет! Я использую DxS');
+          localStorage.setItem('profileAvatar', '👤');
         }
         
         window.location.href = 'chats.html';
