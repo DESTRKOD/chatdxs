@@ -168,6 +168,127 @@
       justify-content: center;
       font-size: 20px;
     }
+
+    .edit-channel-btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(90deg, #5B7CFF, #7FA1FF);
+      border: none;
+      border-radius: 16px;
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: all 0.2s ease;
+    }
+
+    .edit-channel-btn:active {
+      transform: scale(0.96);
+    }
+
+    /* Модальное окно редактирования канала */
+    .edit-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .edit-modal.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .edit-modal-content {
+      width: 85%;
+      max-width: 340px;
+      background: rgba(30, 30, 50, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      padding: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .edit-modal-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .edit-modal-input {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 14px;
+      padding: 14px 16px;
+      color: white;
+      font-size: 16px;
+      margin-bottom: 16px;
+      outline: none;
+    }
+
+    .edit-modal-input:focus {
+      border-color: #5B7CFF;
+      box-shadow: 0 0 0 3px rgba(91, 124, 255, 0.2);
+    }
+
+    .edit-modal-textarea {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 14px;
+      padding: 14px 16px;
+      color: white;
+      font-size: 14px;
+      margin-bottom: 16px;
+      outline: none;
+      resize: vertical;
+      font-family: inherit;
+      min-height: 80px;
+    }
+
+    .edit-modal-buttons {
+      display: flex;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .edit-modal-btn {
+      flex: 1;
+      height: 44px;
+      border-radius: 12px;
+      border: none;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .edit-modal-btn-primary {
+      background: linear-gradient(90deg, #5B7CFF, #7FA1FF);
+      color: white;
+    }
+
+    .edit-modal-btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .edit-modal-btn:active {
+      transform: scale(0.96);
+    }
   </style>
 </head>
 <body>
@@ -207,33 +328,89 @@
       <div class="info-title">Администраторы</div>
       <div class="admin-list" id="adminList"></div>
     </div>
+
+    <button class="edit-channel-btn" id="editChannelBtn">✎ Редактировать канал</button>
+  </div>
+
+  <!-- Модальное окно редактирования канала -->
+  <div id="editModal" class="edit-modal">
+    <div class="edit-modal-content">
+      <div class="edit-modal-title">Редактировать канал</div>
+      <input type="text" class="edit-modal-input" id="editNameInput" placeholder="Название канала">
+      <textarea class="edit-modal-textarea" id="editDescInput" placeholder="Описание канала" rows="3"></textarea>
+      <div class="edit-modal-buttons">
+        <button class="edit-modal-btn edit-modal-btn-secondary" id="cancelEditBtn">Отмена</button>
+        <button class="edit-modal-btn edit-modal-btn-primary" id="saveEditBtn">Сохранить</button>
+      </div>
+    </div>
   </div>
 
   <script>
     const urlParams = new URLSearchParams(window.location.search);
     const channelId = urlParams.get('id');
     
-    const channelData = JSON.parse(localStorage.getItem(`channel_${channelId}`) || JSON.stringify({
-      name: 'Канал',
-      avatar: '📢',
+    // Данные канала
+    let channelData = JSON.parse(localStorage.getItem(`channel_data_${channelId}`) || JSON.stringify({
+      name: channelId === 'design' ? 'Дизайн-канал' : 'Новости DxS',
+      avatar: channelId === 'design' ? '🎨' : '📰',
       subscribers: 156,
-      admins: ['Алексей Смирнов'],
-      description: 'Официальный канал DxS.'
+      admins: ['Алексей Смирнов', 'Администратор'],
+      description: channelId === 'design' 
+        ? 'Канал для дизайнеров. Делимся макетами, идеями и вдохновением.' 
+        : 'Официальный канал DxS. Новости, обновления и анонсы.'
     }));
 
-    document.getElementById('channelAvatar').textContent = channelData.avatar;
-    document.getElementById('channelName').textContent = channelData.name;
-    document.getElementById('channelDesc').textContent = channelData.description;
-    document.getElementById('subscribers').textContent = channelData.subscribers;
-    document.getElementById('adminsCount').textContent = channelData.admins.length;
+    // Проверяем, является ли текущий пользователь админом
+    const currentUser = localStorage.getItem('profileName') || 'Алексей Смирнов';
+    const isAdmin = channelData.admins.includes(currentUser);
 
-    const adminList = document.getElementById('adminList');
-    adminList.innerHTML = channelData.admins.map(admin => `
-      <div class="admin-item">
-        <div class="admin-avatar">👤</div>
-        <div>${admin}</div>
-      </div>
-    `).join('');
+    function updateUI() {
+      document.getElementById('channelAvatar').textContent = channelData.avatar;
+      document.getElementById('channelName').textContent = channelData.name;
+      document.getElementById('channelDesc').textContent = channelData.description;
+      document.getElementById('subscribers').textContent = channelData.subscribers;
+      document.getElementById('adminsCount').textContent = channelData.admins.length;
+
+      const adminList = document.getElementById('adminList');
+      adminList.innerHTML = channelData.admins.map(admin => `
+        <div class="admin-item">
+          <div class="admin-avatar">👤</div>
+          <div>${admin}</div>
+        </div>
+      `).join('');
+
+      // Если не админ, скрываем кнопку редактирования
+      if (!isAdmin) {
+        document.getElementById('editChannelBtn').style.display = 'none';
+      }
+    }
+
+    // Редактирование канала (только для админов)
+    const editModal = document.getElementById('editModal');
+    
+    document.getElementById('editChannelBtn').addEventListener('click', () => {
+      document.getElementById('editNameInput').value = channelData.name;
+      document.getElementById('editDescInput').value = channelData.description;
+      editModal.classList.add('active');
+    });
+    
+    document.getElementById('cancelEditBtn').addEventListener('click', () => {
+      editModal.classList.remove('active');
+    });
+    
+    document.getElementById('saveEditBtn').addEventListener('click', () => {
+      const newName = document.getElementById('editNameInput').value.trim();
+      const newDesc = document.getElementById('editDescInput').value.trim();
+      
+      if (newName) channelData.name = newName;
+      if (newDesc) channelData.description = newDesc;
+      
+      localStorage.setItem(`channel_data_${channelId}`, JSON.stringify(channelData));
+      updateUI();
+      editModal.classList.remove('active');
+    });
+
+    updateUI();
   </script>
 </body>
 </html>
